@@ -3,7 +3,8 @@ import { ROUTES } from '../sidebar/sidebar.component';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { OAuthService } from 'angular-oauth2-oidc';
-import { AppService } from 'app/app.service';
+import { Download, BucketService } from 'app/myapp/services/bucket.service';
+import { Observable } from 'rxjs';
 
 
 interface UserProfile {
@@ -14,7 +15,8 @@ interface UserProfile {
 @Component({
   moduleId: module.id,
   selector: 'app-navbar-cmp',
-  templateUrl: 'navbar.component.html'
+  templateUrl: 'navbar.component.html',
+  styleUrls: ['./navbar.component.css']
 })
 
 export class NavbarComponent implements OnInit {
@@ -25,6 +27,10 @@ export class NavbarComponent implements OnInit {
   private sidebarVisible: boolean;
   public userProfile: UserProfile;
 
+  private download$: Observable<Download>;
+  private takeoutInProgress: boolean = false;
+
+
   public isCollapsed = true;
   @ViewChild('app-navbar-cmp', { static: false }) button;
 
@@ -33,7 +39,7 @@ export class NavbarComponent implements OnInit {
     private element: ElementRef,
     private router: Router,
     private oauthService: OAuthService,
-    private appService: AppService) {
+    private bucketService: BucketService) {
     this.location = location;
     this.nativeElement = element.nativeElement;
     this.sidebarVisible = false;
@@ -117,7 +123,32 @@ export class NavbarComponent implements OnInit {
   }
 
   editProfile() {
-    const win = window.open(this.appService.settings.authCodeFlow.issuer + 'profile', '_blank');
+    const win = window.open('https://dwd.tudelft.nl/profile', '_blank');
     win.focus();
+  }
+
+  takeout() {
+    console.log('takeout')
+    const spinner: HTMLElement = document.getElementById('nav-spinner')
+    spinner.style.display = "block";
+    if (!this.takeoutInProgress) {
+      this.takeoutInProgress = true;
+      this.download$ = this.bucketService.takeout();
+      this.download$.subscribe((value: Download) => {
+        if (value.state === 'PENDING') {
+
+        } else if (value.state === 'DONE') {
+          spinner.style.display = "none";
+          this.takeoutInProgress = false;
+          this.bucketService.toast('Takeout ready.', 'success', 'nc-single-copy-04')
+        }
+      }, (error: Error) => {
+        this.takeoutInProgress = false;
+        spinner.style.display = "none";
+        this.bucketService.toast('Takeout failed.', 'danger', 'nc-single-copy-04')
+      })
+    } else {
+      console.log('ignoring takeout, already ongoing')
+    }
   }
 }

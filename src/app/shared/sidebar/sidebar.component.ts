@@ -15,9 +15,8 @@ export interface RouteInfo {
 }
 
 const dashboardRoute = { path: '/dashboard', title: 'Dashboard', icon: 'nc-layout-11', class: '' }
-const propertiesRoute = { path: '/dashboard/properties', title: 'Properties', icon: 'nc-layout-11', class: '' }
 
-export const ROUTES: RouteInfo[] = [dashboardRoute, propertiesRoute];
+export const ROUTES: RouteInfo[] = [dashboardRoute];
 
 @Component({
     moduleId: module.id,
@@ -25,6 +24,7 @@ export const ROUTES: RouteInfo[] = [dashboardRoute, propertiesRoute];
     templateUrl: 'sidebar.component.html',
     styleUrls: ['sidebar.component.css']
 })
+
 export class SidebarComponent implements OnInit {
     public menuItems: any[];
     serviceSubscription: any

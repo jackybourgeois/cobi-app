@@ -1,17 +1,6 @@
 import { Routes } from '@angular/router';
 
-import { LandingPageComponent } from './landing-page/landing-page.component';
-
 export const AppRoutes: Routes = [
-  {
-    path: '',
-    redirectTo: 'about',
-    pathMatch: 'full'
-  },
-  {
-    path: 'about',
-    component: LandingPageComponent
-  },
   {
     path: 'dashboard',
     loadChildren: () =>
@@ -20,7 +9,14 @@ export const AppRoutes: Routes = [
       )
   },
   {
+    path: '',
+    loadChildren: () =>
+      import('./public/public.module').then(
+        mod => mod.PublicModule
+      )
+  },
+  {
     path: '**',
-    redirectTo: 'about'
+    redirectTo: ''
   }
 ];

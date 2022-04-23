@@ -11,12 +11,12 @@ export class ThingsComponent implements OnInit {
 
   private things: Thing[]
 
-  constructor(private thingService: BucketService) {
+  constructor(private bucketService: BucketService) {
     
   }
 
   async ngOnInit(): Promise<void> {
-    this.things = await this.thingService.find()
+    this.things = await this.bucketService.find()
   }
 
 

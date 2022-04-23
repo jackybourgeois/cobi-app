@@ -9,6 +9,9 @@ import { AppService } from 'app/app.service';
   styleUrls: ['./landing-page.component.css']
 })
 export class LandingPageComponent implements OnInit {
+
+  public text: string;
+
   loginFailed = false;
   userProfile: object;
   login: false;
@@ -17,22 +20,29 @@ export class LandingPageComponent implements OnInit {
     private route: ActivatedRoute,
     private oauthService: OAuthService,
     private appService: AppService
-  ) {}
+  ) {
+    
+  }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    const response = await fetch('https://raw.githubusercontent.com/datacentricdesign/angular-template/main/README.md');
+    this.text = await response.text();
     this.route.params.subscribe(p => {
       this.login = p['login'];
     });
     if (this.oauthService.hasValidAccessToken() && this.oauthService.hasValidIdToken()) {
-      this.userProfile = this.oauthService.getIdentityClaims();
+      this.userProfile = this.oauthService.getIdentityClaims()
     }
   }
 
   async loginCode() {
+    // Tweak config for code flow
     this.oauthService.configure(<AuthConfig> this.appService.settings.authCodeFlow);
     await this.oauthService.loadDiscoveryDocument();
     this.oauthService.requestAccessToken = true;
-    this.oauthService.initLoginFlow('/');
+
+    this.oauthService.initLoginFlow('/some-state;p1=1;p2=2?p3=3&p4=4');
+    // the parameter here is optional. It's passed around and can be used after logging in
   }
 
   logout() {
@@ -40,6 +50,10 @@ export class LandingPageComponent implements OnInit {
     this.oauthService.revokeTokenAndLogout();
   }
 
+  goToMyDashboard() {
+    window.location.href = './dashboard'
+  }
+  
   loadUserProfile(): void {
     this.oauthService.loadUserProfile().then(up => (this.userProfile = up));
   }

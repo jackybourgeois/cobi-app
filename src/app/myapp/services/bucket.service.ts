@@ -251,6 +251,18 @@ export class BucketService {
     }).pipe(download(blob => this.save(blob, fileName)))
   }
 
+  takeout(): Observable<Download> {
+    const url = this.apiURL + '/takeout'
+    const headers = this.getHeader()
+    const fileName = 'takeout.zip'
+    return this.http.get(url, {
+      headers,
+      reportProgress: true,
+      observe: 'events',
+      responseType: 'blob'
+    }).pipe(downloadTakeout(blob => this.save(blob, fileName)))
+  }
+
   createGrafanaThing(thingId: string) {
     const url = this.apiURL + '/things/' + thingId + '/apps/grafana'
     const headers = this.getHeader()
@@ -367,6 +379,53 @@ export function download(
 }
 
 
+
+export function downloadTakeout(
+  saver?: (b: Blob) => void
+): (source: Observable<HttpEvent<Blob>>) => Observable<Download> {
+  return (source: Observable<HttpEvent<Blob>>) =>
+    source.pipe(
+      scan((previous: Download, event: HttpEvent<Blob>): Download => {
+        if (isHttpProgressEvent(event)) {
+          const total = 1166082792
+          let progress = Math.round((100 * event.loaded) / total)
+          if (progress > 100) {
+            progress = 100
+          }
+
+          return {
+            // progress: event.total
+            //   ? Math.round((100 * event.loaded) / event.total)
+            //   : previous.progress,
+            progress: total
+              ? Math.round((100 * event.loaded) / total)
+              : previous.progress,
+            state: 'IN_PROGRESS',
+            content: null
+          }
+        }
+        if (isHttpResponse(event)) {
+          if (saver && event.body) {
+            saver(event.body)
+          }
+          
+          const bar: HTMLElement = document.getElementById('nav-progress-bar')
+          if (bar) {
+            bar.style.display = 'none'
+          }
+
+          return {
+            progress: 100,
+            state: 'DONE',
+            content: event.body
+          }
+        }
+        return previous
+      },
+        { state: 'PENDING', progress: 0, content: null }
+      )
+    )
+}
 
 function isHttpResponse<T>(event: HttpEvent<T>): event is HttpResponse<T> {
   return event.type === HttpEventType.Response

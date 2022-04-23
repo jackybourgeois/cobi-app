@@ -11,7 +11,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { BucketService } from './services/bucket.service';
 import { SAVER, getSaver } from './services/saver.provider';
 import { ThingsComponent } from './things/things.component';
-import { PropertiesComponent } from './properties/properties.component';
+import { ScriptService } from './services/script.service';
 
 @NgModule({
   imports: [
@@ -23,11 +23,11 @@ import { PropertiesComponent } from './properties/properties.component';
   ],
   declarations: [
     DashboardComponent,
-    ThingsComponent,
-    PropertiesComponent
+    ThingsComponent
   ],
   providers: [
     BucketService,
+    ScriptService,
     {provide: SAVER, useFactory: getSaver}
   ],
 })
