@@ -9,7 +9,7 @@ import { Thing } from '@datacentricdesign/types';
 })
 export class ThingsComponent implements OnInit {
 
-  private things: Thing[]
+  public things: Thing[]
 
   constructor(private bucketService: BucketService) {
     

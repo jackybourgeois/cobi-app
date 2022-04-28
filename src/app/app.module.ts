@@ -31,7 +31,7 @@ export function init_app(appService: AppService) {
     BrowserAnimationsModule,
     RouterModule.forRoot(AppRoutes, {
       useHash: false,
-      initialNavigation: true
+      initialNavigation: "enabled"
     }),
     SidebarModule,
     NavbarModule,
