@@ -29,14 +29,10 @@
             "scripts": []
           },
           "configurations": {
-            "development": {
-
-            },
             "production": {
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
@@ -51,15 +47,8 @@
                   "replace": "src/assets/config.json",
                   "with": "src/assets/prod.config.json"
                 }
-              ]
-            },
-            "test": {
-              "fileReplacements": [
-                {
-                  "replace": "src/assets/config.json",
-                  "with": "src/assets/test.config.json"
-                }
-              ]
+              ],
+              "baseHref": "https://jackybourgeois.github.io/cobi-app/"
             }
           }
         },
